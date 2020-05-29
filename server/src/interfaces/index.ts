@@ -1,10 +1,10 @@
-enum SongType {
-  OPENING = 1,
-  ENDING = 2,
-  INSERT = 3,
+export enum SongType {
+  Opening = 1,
+  Ending = 2,
+  Insert = 3,
 }
 
-interface Song {
+export interface Song {
   annSongId: number,
   name: string,
   type: SongType,
@@ -17,7 +17,7 @@ interface Song {
   },
 }
 
-interface Anime {
+export interface Anime {
   annId: number,
   name: string,
   songs: [Song],

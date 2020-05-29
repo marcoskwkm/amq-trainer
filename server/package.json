@@ -6,6 +6,10 @@
   "repository": "https://github.com/marcoskwkm/amq-trainer",
   "author": "Marcos Kawakami",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node lib/index.js"
+  },
   "devDependencies": {
     "@types/node": "^14.0.5",
     "@vtex/prettier-config": "^0.2.0",
