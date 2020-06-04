@@ -1,10 +1,18 @@
 import cors from 'cors'
 import express from 'express'
 import fileUpload, { UploadedFile } from 'express-fileupload'
+import knex from 'knex'
 
 import { setupGraphQL } from './graphql'
 
 const app = express()
+const pg = knex({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    database: 'amq-trainer',
+  },
+})
 
 setupGraphQL(app)
 app.use(cors())
@@ -16,6 +24,7 @@ app.post('/updateSongs', (req, res) => {
     return
   }
 
+  // TODO: validate format
   const songList = JSON.parse((req.files.songlist as UploadedFile).data.toString())
 
   console.log(songList)
@@ -23,4 +32,8 @@ app.post('/updateSongs', (req, res) => {
 })
 
 app.listen(3001)
-console.log('running server')
+
+;(async () => {
+  const users = await pg.select('*').from('users')
+  console.log(users)
+})()
