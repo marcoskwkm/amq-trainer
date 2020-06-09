@@ -5,6 +5,7 @@ import knex from 'knex'
 
 import { setupGraphQL } from './graphql'
 import { Anime } from './interfaces'
+import { getSongTypeLabel } from './utils/songs'
 
 const app = express()
 const pg = knex({
@@ -89,6 +90,21 @@ app.get('/animeList', async (_, res) => {
     ),
   ]
   res.send(animeList)
+})
+
+app.get('/random_song', async (_, res) => {
+  const allSongs = await pg
+    .select('name', 'artist', 'type', 'number', 'url')
+    .from('songs')
+
+  const song = allSongs[Math.floor(allSongs.length * Math.random())]
+
+  res.send({
+    name: song.name,
+    artist: song.artist,
+    type: getSongTypeLabel(song),
+    url: song.url,
+  })
 })
 
 app.listen(3001)
