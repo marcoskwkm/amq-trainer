@@ -80,6 +80,17 @@ app.post('/updateSongs', async (req, res) => {
   res.send(`new anime: ${newAnime}, new songs: ${newSongs}`)
 })
 
+app.get('/animeList', async (_, res) => {
+  const animeList = [
+    ...new Set(
+      (await pg.select('acceptable_names').from('anime'))
+        .map((row) => row.acceptable_names)
+        .flat()
+    ),
+  ]
+  res.send(animeList)
+})
+
 app.listen(3001)
 ;(async () => {
   const users = await pg.select('*').from('users')
