@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 
+import { SERVER_URL } from './constants'
+import SongPlayer from './SongPlayer'
+
 const App = () => {
   const [uploadedFile, setUploadedFile] = useState()
   const [uploadResult, setUploadResult] = useState('')
@@ -20,7 +23,7 @@ const App = () => {
     const data = new FormData()
     data.append('songlist', uploadedFile)
     axios
-      .post('http://localhost:3001/updateSongs', data)
+      .post(`${SERVER_URL}/updateSongs`, data)
       .then((res) => setUploadResult(res.data))
   }
 
@@ -35,6 +38,7 @@ const App = () => {
         Upload
       </button>
       <div>{uploadResult}</div>
+      <SongPlayer />
     </div>
   )
 }
