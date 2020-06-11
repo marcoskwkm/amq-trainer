@@ -3,4 +3,6 @@ export interface Song {
   type: string,
   artist: string,
   url: string,
+  answer: string,
+  answers: string[],
 }

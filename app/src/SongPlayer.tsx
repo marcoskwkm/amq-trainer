@@ -7,27 +7,65 @@ import { Song } from './typings'
 enum State {
   INITIAL,
   LOADING_SONG,
-  PLAYING_SONG,
+  GUESSING,
+  ANSWERED,
 }
 
 const SongPlayer = () => {
   const [state, setState] = useState(State.INITIAL)
   const [song, setSong] = useState<Song | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [guess, setGuess] = useState('')
+  const [result, setResult] = useState('')
+
   const playerRef = useRef<HTMLMediaElement>(null)
 
   const loadNewSong = useCallback(() => {
     axios.get(`${SERVER_URL}/random_song`).then((res: AxiosResponse<Song>) => {
       setSong(res.data)
     })
+    setGuess('')
     setState(State.LOADING_SONG)
-    setLoading(true)
   }, [setState])
 
   const handleOnCanPlayThrough = useCallback(() => {
     playerRef.current?.play()
-    setLoading(false)
+    setState(State.GUESSING)
   }, [playerRef])
+
+  const handleGuessChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setGuess(event.target.value)
+    },
+    [setGuess]
+  )
+
+  const handleKeyPress = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (
+        event.key !== 'Enter' ||
+        (state !== State.GUESSING && state !== State.ANSWERED)
+      ) {
+        return
+      }
+
+      if (state === State.ANSWERED) {
+        loadNewSong()
+      } else if (guess.length > 0) {
+        if (
+          song!.answers
+            .map((answer) => answer.toLowerCase())
+            .includes(guess.toLowerCase())
+        ) {
+          setResult('Correct!')
+        } else {
+          setResult('Incorrect.')
+          console.log(song!.answers)
+        }
+        setState(State.ANSWERED)
+      }
+    },
+    [song, state, guess, loadNewSong]
+  )
 
   if (state === State.INITIAL) {
     return (
@@ -50,10 +88,21 @@ const SongPlayer = () => {
             onCanPlayThrough={handleOnCanPlayThrough}
           />
         </div>
-        {loading && <p>Loading...</p>}
+        {state === State.LOADING_SONG && <p>Loading...</p>}
+        <input
+          value={guess}
+          onChange={handleGuessChange}
+          onKeyPress={handleKeyPress}
+        />
         <button type="button" onClick={loadNewSong}>
           New song
         </button>
+        {state === State.ANSWERED && (
+          <>
+            <p>{result}</p>
+            <p>Answer: {song.answer}</p>
+          </>
+        )}
       </div>
     )
   )
