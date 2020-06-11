@@ -62,13 +62,13 @@ app.post('/updateSongs', async (req, res) => {
               if (rows.length === 0) {
                 await pg('songs').insert({
                   ann_song_id: song.annSongId,
+                  ann_anime_id: anime.annId,
                   name: song.name,
                   artist: song.artist,
                   type: song.type,
                   number: song.number,
                   url: song.examples.mp3,
                   date_added: pg.fn.now(),
-                  acceptable_ann_ids: [anime.annId],
                 })
                 newSongs += 1
               }
@@ -94,21 +94,38 @@ app.get('/animeList', async (_, res) => {
 
 app.get('/random_song', async (_, res) => {
   const allSongs = await pg
-    .select('name', 'artist', 'type', 'number', 'url')
+    .select('name', 'artist', 'type', 'number', 'url', 'ann_anime_id')
     .from('songs')
 
   const song = allSongs[Math.floor(allSongs.length * Math.random())]
+  const [{ display_name: answer }] = await pg
+    .select('display_name')
+    .from('anime')
+    .where('ann_id', '=', song.ann_anime_id)
+
+  const acceptableAnswers = [
+    ...new Set(
+      (
+        await pg
+          .select('acceptable_names')
+          .from('songs')
+          .join('anime', 'songs.ann_anime_id', '=', 'anime.ann_id')
+          .where('name', '=', song.name)
+          .where('artist', '=', song.artist)
+      )
+        .map((row) => row.acceptable_names)
+        .flat()
+    ),
+  ]
 
   res.send({
     name: song.name,
     artist: song.artist,
     type: getSongTypeLabel(song),
     url: song.url,
+    answer,
+    answers: acceptableAnswers,
   })
 })
 
 app.listen(3001)
-;(async () => {
-  const users = await pg.select('*').from('users')
-  console.log(users)
-})()

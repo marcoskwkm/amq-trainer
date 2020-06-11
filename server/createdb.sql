@@ -1,12 +1,12 @@
 CREATE TABLE songs (
   ann_song_id INT PRIMARY KEY,
+  ann_anime_id INT,
   name TEXT NOT NULL,
   artist TEXT,
   type SMALLINT,
   number SMALLINT,
   url TEXT,
-  date_added TIMESTAMP NOT NULL,
-  acceptable_ann_ids INT[]
+  date_added TIMESTAMP NOT NULL
 );
 
 CREATE TABLE anime (
