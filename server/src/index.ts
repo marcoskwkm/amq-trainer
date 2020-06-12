@@ -20,7 +20,7 @@ setupGraphQL(app)
 app.use(cors())
 app.use(fileUpload())
 
-app.post('/updateSongs', async (req, res) => {
+app.post('/update-songs', async (req, res) => {
   if (!req.files) {
     res.send('no file sent')
     return
@@ -81,7 +81,7 @@ app.post('/updateSongs', async (req, res) => {
   res.send(`new anime: ${newAnime}, new songs: ${newSongs}`)
 })
 
-app.get('/animeList', async (_, res) => {
+app.get('/anime-list', async (_, res) => {
   const animeList = [
     ...new Set(
       (await pg.select('acceptable_names').from('anime'))
@@ -92,7 +92,7 @@ app.get('/animeList', async (_, res) => {
   res.send(animeList)
 })
 
-app.get('/random_song', async (_, res) => {
+app.get('/random-song', async (_, res) => {
   const allSongs = await pg
     .select('name', 'artist', 'type', 'number', 'url', 'ann_anime_id')
     .from('songs')
