@@ -1,8 +1,11 @@
-import React, { useCallback, useRef, useState } from 'react'
+// @ts-nocheck
+
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import axios, { AxiosResponse } from 'axios'
 
 import { SERVER_URL } from './constants'
 import { Song } from './typings'
+import AutocompleteInput from './AutocompleteInput'
 
 enum State {
   INITIAL,
@@ -17,10 +20,20 @@ const SongPlayer = () => {
   const [guess, setGuess] = useState('')
   const [result, setResult] = useState('')
 
+  const allAnimeNamesRef = useRef<string[]>([])
   const playerRef = useRef<HTMLMediaElement>(null)
 
+  // Load anime names
+  useEffect(() => {
+    axios
+      .get(`${SERVER_URL}/anime-list`)
+      .then((res: AxiosResponse<string[]>) => {
+        allAnimeNamesRef.current = res.data
+      })
+  }, [])
+
   const loadNewSong = useCallback(() => {
-    axios.get(`${SERVER_URL}/random_song`).then((res: AxiosResponse<Song>) => {
+    axios.get(`${SERVER_URL}/random-song`).then((res: AxiosResponse<Song>) => {
       setSong(res.data)
     })
     setGuess('')
@@ -33,13 +46,13 @@ const SongPlayer = () => {
   }, [playerRef])
 
   const handleGuessChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setGuess(event.target.value)
+    (value: string) => {
+      setGuess(value)
     },
     [setGuess]
   )
 
-  const handleKeyPress = useCallback(
+  const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       if (
         event.key !== 'Enter' ||
@@ -89,10 +102,10 @@ const SongPlayer = () => {
           />
         </div>
         {state === State.LOADING_SONG && <p>Loading...</p>}
-        <input
+        <AutocompleteInput
           value={guess}
           onChange={handleGuessChange}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
         />
         <button type="button" onClick={loadNewSong}>
           New song
