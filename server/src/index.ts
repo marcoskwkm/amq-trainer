@@ -54,6 +54,10 @@ app.post('/update-songs', async (req, res) => {
 
       await Promise.all(
         anime.songs.map(async (song) => {
+          if (!song.examples.mp3) {
+            return
+          }
+
           await pg
             .select('*')
             .from('songs')
