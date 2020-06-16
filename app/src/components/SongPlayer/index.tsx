@@ -1,11 +1,9 @@
-// @ts-nocheck
-
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import axios, { AxiosResponse } from 'axios'
 
-import { SERVER_URL } from './constants'
-import { Song } from './typings'
-import AutocompleteInput from './AutocompleteInput'
+import { SERVER_URL } from '../../constants'
+import { Song } from '../../typings'
+import AutocompleteInput from '../AutocompleteInput'
 
 enum State {
   INITIAL,

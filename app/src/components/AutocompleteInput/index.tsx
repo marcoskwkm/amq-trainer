@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import axios, { AxiosResponse } from 'axios'
 
 import './AutocompleteInput.css'
-import { SERVER_URL } from './constants'
+import { SERVER_URL } from '../../constants'
 
 interface AutocompleteInputProps {
   value: string
@@ -71,7 +71,6 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
         setActiveSuggestion(activeSuggestion - 1)
       }
     } else if (event.key === 'ArrowDown') {
-      console.log('woo', activeSuggestion)
       if (activeSuggestion === null) {
         onChange(suggestions[0])
         setActiveSuggestion(0)

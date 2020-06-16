@@ -1,44 +1,26 @@
 import React, { useState } from 'react'
-import axios from 'axios'
 
-import { SERVER_URL } from './constants'
-import SongPlayer from './SongPlayer'
+import Home from './components/Home'
+import Navbar from './components/Navbar'
+import SongPlayer from './components/SongPlayer'
+import UpdateDatabase from './components/UpdateDatabase'
+import { Route } from './constants'
 
 const App = () => {
-  const [uploadedFile, setUploadedFile] = useState()
-  const [uploadResult, setUploadResult] = useState('')
-
-  const handleFileChange = (file?: File) => {
-    if (file) {
-      console.log(file)
-      setUploadedFile(file)
-    }
-  }
-
-  const handleSubmit = () => {
-    if (!uploadedFile) {
-      return
-    }
-
-    const data = new FormData()
-    data.append('songlist', uploadedFile)
-    axios
-      .post(`${SERVER_URL}/updateSongs`, data)
-      .then((res) => setUploadResult(res.data))
-  }
+  const [route, setRoute] = useState(Route.HOME)
 
   return (
     <div>
-      <input
-        type="file"
-        accept=".json"
-        onChange={(e) => handleFileChange(e.target.files?.[0])}
-      />
-      <button type="button" onClick={handleSubmit}>
-        Upload
-      </button>
-      <div>{uploadResult}</div>
-      <SongPlayer />
+      <Navbar onRouteChange={setRoute} />
+      <div className="pa3">
+        {route === Route.HOME ? (
+          <Home />
+        ) : route === Route.PRACTICE ? (
+          <SongPlayer />
+        ) : route === Route.UPDATE_DATABASE ? (
+          <UpdateDatabase />
+        ) : null}
+      </div>
     </div>
   )
 }
