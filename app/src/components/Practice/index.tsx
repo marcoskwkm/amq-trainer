@@ -12,7 +12,7 @@ enum State {
   ANSWERED,
 }
 
-const SongPlayer = () => {
+const Practice = () => {
   const [state, setState] = useState(State.INITIAL)
   const [song, setSong] = useState<Song | null>(null)
   const [guess, setGuess] = useState('')
@@ -119,4 +119,4 @@ const SongPlayer = () => {
   )
 }
 
-export default SongPlayer
+export default Practice

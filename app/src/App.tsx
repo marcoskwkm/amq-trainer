@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import Home from './components/Home'
 import Navbar from './components/Navbar'
-import SongPlayer from './components/SongPlayer'
+import Practice from './components/Practice'
 import UpdateDatabase from './components/UpdateDatabase'
 import { Route } from './constants'
 
@@ -16,7 +16,7 @@ const App = () => {
         {route === Route.HOME ? (
           <Home />
         ) : route === Route.PRACTICE ? (
-          <SongPlayer />
+          <Practice />
         ) : route === Route.UPDATE_DATABASE ? (
           <UpdateDatabase />
         ) : null}
