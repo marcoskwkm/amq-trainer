@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import axios, { AxiosResponse } from 'axios'
 
+import { useConfig } from '../../config'
 import { SERVER_URL } from '../../constants'
 import { Song } from '../../typings'
 import AutocompleteInput from '../AutocompleteInput'
@@ -12,11 +13,18 @@ enum State {
   ANSWERED,
 }
 
+const getSongStartTime = (songDuration: number, sampleLength: number) => {
+  // Random sample
+  return Math.max(songDuration - sampleLength, 0) * Math.random()
+}
+
 const Practice = () => {
   const [state, setState] = useState(State.INITIAL)
   const [song, setSong] = useState<Song | null>(null)
   const [guess, setGuess] = useState('')
   const [result, setResult] = useState('')
+
+  const { sampleLength } = useConfig()
 
   const allAnimeNamesRef = useRef<string[]>([])
   const playerRef = useRef<HTMLMediaElement>(null)
@@ -37,6 +45,16 @@ const Practice = () => {
     setGuess('')
     setState(State.LOADING_SONG)
   }, [setState])
+
+  const handleLoadedMetadata = useCallback(() => {
+    if (playerRef.current) {
+      const startTime = getSongStartTime(
+        playerRef.current.duration,
+        sampleLength
+      )
+      playerRef.current.currentTime = startTime
+    }
+  }, [sampleLength])
 
   const handleOnCanPlayThrough = useCallback(() => {
     playerRef.current?.play()
@@ -96,6 +114,7 @@ const Practice = () => {
           <audio
             ref={playerRef}
             src={song.url}
+            onLoadedMetadata={handleLoadedMetadata}
             onCanPlayThrough={handleOnCanPlayThrough}
           />
         </div>
