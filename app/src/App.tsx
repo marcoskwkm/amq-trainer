@@ -13,7 +13,7 @@ const App = () => {
   return (
     <ConfigContextProvider>
       <Navbar onRouteChange={setRoute} />
-      <div className="pa3">
+      <div className="pa3 center">
         {route === Route.HOME ? (
           <Home />
         ) : route === Route.PRACTICE ? (

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import axios, { AxiosResponse } from 'axios'
 
 import './AutocompleteInput.css'
@@ -82,16 +82,16 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   }
 
   return (
-    <Fragment>
+    <>
       <input
-        style={{ width: '500px' }}
+        className="w-100"
         type="text"
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         value={value}
       />
       {showSuggestions && suggestions.length > 0 && (
-        <ul className="suggestions">
+        <ul className="suggestions w-100">
           {suggestions.map((suggestion, index) => (
             <li
               className={
@@ -105,7 +105,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
           ))}
         </ul>
       )}
-    </Fragment>
+    </>
   )
 }
 

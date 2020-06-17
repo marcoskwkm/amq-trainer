@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
 import axios, { AxiosResponse } from 'axios'
 
 import { useConfig } from '../../config'
@@ -13,6 +19,15 @@ enum State {
   ANSWERED,
 }
 
+interface AdditionalSongInfo {
+  sampleStart: number
+}
+
+const formatTime = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+  return `${minutes}:${('00' + Math.floor(seconds - 60 * minutes)).slice(-2)}`
+}
+
 const getSongStartTime = (songDuration: number, sampleLength: number) => {
   // Random sample
   return Math.max(songDuration - sampleLength, 0) * Math.random()
@@ -23,6 +38,19 @@ const Practice = () => {
   const [song, setSong] = useState<Song | null>(null)
   const [guess, setGuess] = useState('')
   const [result, setResult] = useState('')
+  const [timer, setTimer] = useState(0)
+  const timerTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [additionalSongInfo, setAdditionalSongInfo] = useReducer<
+    React.Reducer<AdditionalSongInfo, Partial<AdditionalSongInfo>>
+  >(
+    (info, newInfo) => ({
+      ...info,
+      ...newInfo,
+    }),
+    {
+      sampleStart: 0,
+    }
+  )
 
   const { sampleLength } = useConfig()
 
@@ -39,12 +67,35 @@ const Practice = () => {
   }, [])
 
   const loadNewSong = useCallback(() => {
+    stopTimer()
+
     axios.get(`${SERVER_URL}/random-song`).then((res: AxiosResponse<Song>) => {
       setSong(res.data)
     })
+
     setGuess('')
     setState(State.LOADING_SONG)
   }, [setState])
+
+  const startTimer = () => {
+    const startTimestamp = Date.now()
+    const f = () => {
+      // Add 1 to prevent timer from jumping from sampleLength to sampleLength - 2
+      const elapsedTime = Date.now() - startTimestamp + 1
+      const secondsLeft = Math.floor(sampleLength - elapsedTime / 1000)
+      if (secondsLeft >= 0) {
+        setTimer(secondsLeft)
+        timerTimeoutRef.current = setTimeout(f, 1000)
+      }
+    }
+    f()
+  }
+
+  const stopTimer = () => {
+    if (timerTimeoutRef.current) {
+      clearTimeout(timerTimeoutRef.current)
+    }
+  }
 
   const handleLoadedMetadata = useCallback(() => {
     if (playerRef.current) {
@@ -52,14 +103,20 @@ const Practice = () => {
         playerRef.current.duration,
         sampleLength
       )
+
+      setAdditionalSongInfo({
+        sampleStart: startTime,
+      })
+
       playerRef.current.currentTime = startTime
     }
-  }, [sampleLength])
+  }, [sampleLength, setAdditionalSongInfo])
 
-  const handleOnCanPlayThrough = useCallback(() => {
+  const handleOnCanPlayThrough = () => {
     playerRef.current?.play()
     setState(State.GUESSING)
-  }, [playerRef])
+    startTimer()
+  }
 
   const handleGuessChange = useCallback(
     (value: string) => {
@@ -106,31 +163,39 @@ const Practice = () => {
 
   return (
     song && (
-      <div>
-        <p>Name: {song.name}</p>
-        <p>Artist: {song.artist}</p>
-        <p>{song.type}</p>
-        <div>
-          <audio
-            ref={playerRef}
-            src={song.url}
-            onLoadedMetadata={handleLoadedMetadata}
-            onCanPlayThrough={handleOnCanPlayThrough}
-          />
-        </div>
-        {state === State.LOADING_SONG && <p>Loading...</p>}
-        <AutocompleteInput
-          value={guess}
-          onChange={handleGuessChange}
-          onKeyDown={handleKeyDown}
+      <div className="mw7">
+        <audio
+          ref={playerRef}
+          src={song.url}
+          onLoadedMetadata={handleLoadedMetadata}
+          onCanPlayThrough={handleOnCanPlayThrough}
         />
-        <button type="button" onClick={loadNewSong}>
-          New song
-        </button>
+        <p className="f-headline mv4 tc">
+          {state === State.LOADING_SONG ? 'Loading...' : timer}
+        </p>
+        <div className="flex justify-between items-start">
+          <div className="w-80">
+            <AutocompleteInput
+              value={guess}
+              onChange={handleGuessChange}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+          <button type="button" onClick={loadNewSong}>
+            New song
+          </button>
+        </div>
         {state === State.ANSWERED && (
           <>
             <p>{result}</p>
-            <p>Answer: {song.answer}</p>
+            <p>
+              <span className="fwb">Answer:</span> {song.answer}
+            </p>
+            <p className="fwb">Song info:</p>
+            <p>Name: {song.name}</p>
+            <p>Artist: {song.artist}</p>
+            <p>{song.type}</p>
+            <p>Sample start: {formatTime(additionalSongInfo.sampleStart)}</p>
           </>
         )}
       </div>
