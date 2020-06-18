@@ -21,7 +21,7 @@ const UpdateDatabase = () => {
     const data = new FormData()
     data.append('songlist', uploadedFile)
     axios
-      .post(`${SERVER_URL}/updateSongs`, data)
+      .post(`${SERVER_URL}/update-songs`, data)
       .then((res) => setUploadResult(res.data))
   }
 
