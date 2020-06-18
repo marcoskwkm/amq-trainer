@@ -1,4 +1,4 @@
-export const SERVER_URL = 'http://localhost:3001'
+export const SERVER_URL = 'https://amq-trainer-server.herokuapp.com'
 
 export enum Route {
   HOME,
