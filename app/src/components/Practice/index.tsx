@@ -66,16 +66,21 @@ const Practice = () => {
       })
   }, [])
 
-  const loadNewSong = useCallback(() => {
-    stopTimer()
+  const stopTimer = useCallback(() => {
+    if (timerTimeoutRef.current) {
+      clearTimeout(timerTimeoutRef.current)
+    }
+  }, [])
 
+  const loadNewSong = useCallback(() => {
     axios.get(`${SERVER_URL}/random-song`).then((res: AxiosResponse<Song>) => {
       setSong(res.data)
     })
 
+    stopTimer()
     setGuess('')
     setState(State.LOADING_SONG)
-  }, [setState])
+  }, [setGuess, setState, stopTimer])
 
   const startTimer = () => {
     const startTimestamp = Date.now()
@@ -89,12 +94,6 @@ const Practice = () => {
       }
     }
     f()
-  }
-
-  const stopTimer = () => {
-    if (timerTimeoutRef.current) {
-      clearTimeout(timerTimeoutRef.current)
-    }
   }
 
   const handleLoadedMetadata = useCallback(() => {
@@ -163,7 +162,7 @@ const Practice = () => {
 
   return (
     song && (
-      <div className="mw7">
+      <div className="mw7 center">
         <audio
           ref={playerRef}
           src={song.url}
@@ -191,11 +190,13 @@ const Practice = () => {
             <p>
               <span className="fwb">Answer:</span> {song.answer}
             </p>
-            <p className="fwb">Song info:</p>
-            <p>Name: {song.name}</p>
-            <p>Artist: {song.artist}</p>
-            <p>{song.type}</p>
-            <p>Sample start: {formatTime(additionalSongInfo.sampleStart)}</p>
+            <div className="mt4">
+              <p className="fwb">Song info:</p>
+              <p>Name: {song.name}</p>
+              <p>Artist: {song.artist}</p>
+              <p>{song.type}</p>
+              <p>Sample start: {formatTime(additionalSongInfo.sampleStart)}</p>
+            </div>
           </>
         )}
       </div>
