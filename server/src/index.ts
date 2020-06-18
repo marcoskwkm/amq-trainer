@@ -2,6 +2,8 @@ import cors from 'cors'
 import express from 'express'
 import fileUpload from 'express-fileupload'
 
+const PORT = process.env.PORT || 3001
+
 import { setupGraphQL } from './graphql'
 import {
   animeListHandler,
@@ -21,4 +23,4 @@ app.get('/db-stats', dbStatsHandler)
 app.get('/random-song', randomSongHandler)
 app.post('/update-songs', updateSongsHandler)
 
-app.listen(3001)
+app.listen(PORT)
