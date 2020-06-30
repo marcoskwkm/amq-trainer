@@ -118,8 +118,8 @@ const Practice = () => {
   }
 
   const handleGuessChange = useCallback(
-    (value: string) => {
-      setGuess(value)
+    (_: any, { newValue }: { newValue: string }) => {
+      setGuess(newValue)
     },
     [setGuess]
   )
@@ -172,7 +172,7 @@ const Practice = () => {
         <p className="f-headline mv4 tc">
           {state === State.LOADING_SONG ? 'Loading...' : timer}
         </p>
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-center">
           <div className="w-80">
             <AutocompleteInput
               value={guess}

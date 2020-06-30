@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import axios, { AxiosResponse } from 'axios'
+import Autosuggest from 'react-autosuggest'
 
 import './AutocompleteInput.css'
 import { SERVER_URL } from '../../constants'
 
 interface AutocompleteInputProps {
   value: string
-  onChange: (value: string) => void
+  onChange: (event: any, { newValue }: { newValue: string }) => void
   onKeyDown: (event: React.KeyboardEvent) => void
 }
 
@@ -16,8 +17,6 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   onKeyDown,
 }) => {
   const [suggestions, setSuggestions] = useState<string[]>([])
-  const [showSuggestions, setShowSuggestions] = useState<boolean>(false)
-  const [activeSuggestion, setActiveSuggestion] = useState<number | null>(null)
 
   const animeListRef = useRef<string[]>([])
 
@@ -30,82 +29,41 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
       })
   }, [])
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
+  const getSuggestionValue = (suggestion: string) => suggestion
 
+  const renderSuggestion = (suggestion: string) => (
+    <div className="pa1">{suggestion}</div>
+  )
+
+  const handleSuggestionsFetchRequested = ({ value }: { value: string }) => {
     const filteredSuggestions =
       value.trim().length > 0
-        ? animeListRef.current.filter((name) =>
-            name.toLowerCase().includes(value.trim().toLowerCase())
-          )
+        ? animeListRef.current
+            .filter((name) =>
+              name.toLowerCase().includes(value.trim().toLowerCase())
+            )
+            .sort()
         : []
 
     setSuggestions(filteredSuggestions)
-    setShowSuggestions(filteredSuggestions.length > 0)
-    onChange(value)
   }
 
-  const handleClick = (event: React.MouseEvent) => {
-    setShowSuggestions(false)
-    setActiveSuggestion(null)
-    onChange((event.currentTarget as any).innerText)
-  }
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (!showSuggestions) {
-      onKeyDown(event)
-      return
-    }
-
-    if (event.key === 'Enter') {
-      setShowSuggestions(false)
-      setActiveSuggestion(null)
-      if (activeSuggestion) {
-        onChange(suggestions[activeSuggestion])
-      } else {
-        onKeyDown(event)
-      }
-    } else if (event.key === 'ArrowUp') {
-      if (activeSuggestion && activeSuggestion > 0) {
-        onChange(suggestions[activeSuggestion - 1])
-        setActiveSuggestion(activeSuggestion - 1)
-      }
-    } else if (event.key === 'ArrowDown') {
-      if (activeSuggestion === null) {
-        onChange(suggestions[0])
-        setActiveSuggestion(0)
-      } else if (activeSuggestion < suggestions.length - 1) {
-        onChange(suggestions[activeSuggestion + 1])
-        setActiveSuggestion(activeSuggestion + 1)
-      }
-    }
-  }
+  const handleSuggestionsClearRequested = () => setSuggestions([])
 
   return (
-    <>
-      <input
-        className="w-100"
-        type="text"
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        value={value}
-      />
-      {showSuggestions && suggestions.length > 0 && (
-        <ul className="suggestions w-100">
-          {suggestions.map((suggestion, index) => (
-            <li
-              className={
-                index === activeSuggestion ? 'suggestion-active' : undefined
-              }
-              key={suggestion}
-              onClick={handleClick}
-            >
-              {suggestion}
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
+    <Autosuggest
+      suggestions={suggestions}
+      onSuggestionsFetchRequested={handleSuggestionsFetchRequested}
+      onSuggestionsClearRequested={handleSuggestionsClearRequested}
+      getSuggestionValue={getSuggestionValue}
+      renderSuggestion={renderSuggestion}
+      inputProps={{
+        onChange,
+        onKeyDown,
+        value,
+        className: 'pa1 w-100',
+      }}
+    />
   )
 }
 
