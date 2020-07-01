@@ -11,12 +11,14 @@ import { useConfig } from '../../config'
 import { SERVER_URL } from '../../constants'
 import { Song } from '../../typings'
 import AutocompleteInput from '../AutocompleteInput'
+import './Practice.css'
 
 enum State {
   INITIAL,
   LOADING_SONG,
   GUESSING,
-  ANSWERED,
+  ANSWERED_CORRECT,
+  ANSWERED_INCORRECT,
 }
 
 interface AdditionalSongInfo {
@@ -37,7 +39,7 @@ const Practice = () => {
   const [state, setState] = useState(State.INITIAL)
   const [song, setSong] = useState<Song | null>(null)
   const [guess, setGuess] = useState('')
-  const [result, setResult] = useState('')
+  const [result, setResult] = useState('Placeholder')
   const [timer, setTimer] = useState(0)
   const timerTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [additionalSongInfo, setAdditionalSongInfo] = useReducer<
@@ -128,12 +130,19 @@ const Practice = () => {
     (event: React.KeyboardEvent) => {
       if (
         event.key !== 'Enter' ||
-        (state !== State.GUESSING && state !== State.ANSWERED)
+        ![
+          State.GUESSING,
+          State.ANSWERED_CORRECT,
+          State.ANSWERED_INCORRECT,
+        ].includes(state)
       ) {
         return
       }
 
-      if (state === State.ANSWERED) {
+      if (
+        state === State.ANSWERED_CORRECT ||
+        state === State.ANSWERED_INCORRECT
+      ) {
         loadNewSong()
       } else if (guess.length > 0) {
         if (
@@ -142,11 +151,12 @@ const Practice = () => {
             .includes(guess.toLowerCase())
         ) {
           setResult('Correct!')
+          setState(State.ANSWERED_CORRECT)
         } else {
           setResult('Incorrect.')
+          setState(State.ANSWERED_INCORRECT)
           console.log(song!.answers)
         }
-        setState(State.ANSWERED)
       }
     },
     [song, state, guess, loadNewSong]
@@ -169,9 +179,21 @@ const Practice = () => {
           onLoadedMetadata={handleLoadedMetadata}
           onCanPlayThrough={handleOnCanPlayThrough}
         />
-        <p className="f-headline mv4 tc">
+        <p className="f-headline mt4 mb0 tc">
           {state === State.LOADING_SONG ? 'Loading...' : timer}
         </p>
+        <div className="h2">
+          {(state === State.ANSWERED_CORRECT ||
+            state === State.ANSWERED_INCORRECT) && (
+            <p
+              className={`resultText tc mv0 fw6 ${
+                state === State.ANSWERED_CORRECT ? 'green' : 'red'
+              }`}
+            >
+              {result}
+            </p>
+          )}
+        </div>
         <div className="flex justify-between items-center">
           <div className="w-80">
             <AutocompleteInput
@@ -184,9 +206,9 @@ const Practice = () => {
             New song
           </button>
         </div>
-        {state === State.ANSWERED && (
+        {(state === State.ANSWERED_CORRECT ||
+          state === State.ANSWERED_INCORRECT) && (
           <>
-            <p>{result}</p>
             <p>
               <span className="fwb">Answer:</span> {song.answer}
             </p>
