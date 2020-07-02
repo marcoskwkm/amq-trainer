@@ -10,6 +10,7 @@ import {
   dbStatsHandler,
   randomSongHandler,
   updateSongsHandler,
+  userDataHandler,
 } from './routes'
 
 const app = express()
@@ -21,6 +22,7 @@ app.use(fileUpload())
 app.get('/anime-list', animeListHandler)
 app.get('/db-stats', dbStatsHandler)
 app.get('/random-song', randomSongHandler)
+app.get('/user-data', userDataHandler)
 app.post('/update-songs', updateSongsHandler)
 
 app.listen(PORT)
