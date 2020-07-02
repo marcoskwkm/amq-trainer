@@ -7,8 +7,8 @@ import React, {
 } from 'react'
 import axios, { AxiosResponse } from 'axios'
 
-import { useConfig } from '../../config'
 import { SERVER_URL } from '../../constants'
+import { useConfig } from '../../context/ConfigContext'
 import { Song } from '../../typings'
 import AutocompleteInput from '../AutocompleteInput'
 import './Practice.css'

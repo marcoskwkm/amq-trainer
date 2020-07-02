@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Route } from '../../constants'
+import Login from '../Login'
 
 interface NavbarProps {
   onRouteChange: (route: Route) => void
@@ -8,8 +9,8 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ onRouteChange }) => {
   return (
-    <nav className="dt w-100 border-box pa3 bb">
-      <div className="dtc v-mid w-75 tl">
+    <nav className="dt w-100 border-box ph3 bb h3">
+      <div className="dtc v-mid w-50 tl">
         <span
           className="link dim dark-gray f6 f5-ns dib fw6 pointer"
           onClick={() => onRouteChange(Route.HOME)}
@@ -29,13 +30,8 @@ const Navbar: React.FC<NavbarProps> = ({ onRouteChange }) => {
           Update database
         </span>
       </div>
-      <div className="dtc v-mid w-25 tr">
-        <span
-          className="link dim dark-gray f6 f5-ns dib pointer"
-          onClick={() => alert('Please purchase the full version to login.')}
-        >
-          Login
-        </span>
+      <div className="dtc v-mid w-50">
+        <Login />
       </div>
     </nav>
   )
