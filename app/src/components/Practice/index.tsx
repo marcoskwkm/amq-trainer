@@ -71,18 +71,9 @@ const Practice = () => {
   const stopTimer = useCallback(() => {
     if (timerTimeoutRef.current) {
       clearTimeout(timerTimeoutRef.current)
+      timerTimeoutRef.current = null
     }
   }, [])
-
-  const loadNewSong = useCallback(() => {
-    axios.get(`${SERVER_URL}/random-song`).then((res: AxiosResponse<Song>) => {
-      setSong(res.data)
-    })
-
-    stopTimer()
-    setGuess('')
-    setState(State.LOADING_SONG)
-  }, [setGuess, setState, stopTimer])
 
   const startTimer = () => {
     const startTimestamp = Date.now()
@@ -97,6 +88,16 @@ const Practice = () => {
     }
     f()
   }
+
+  const loadNewSong = useCallback(() => {
+    axios.get(`${SERVER_URL}/random-song`).then((res: AxiosResponse<Song>) => {
+      setSong(res.data)
+    })
+
+    stopTimer()
+    setGuess('')
+    setState(State.LOADING_SONG)
+  }, [setGuess, setState, stopTimer])
 
   const handleLoadedMetadata = useCallback(() => {
     if (playerRef.current) {
@@ -116,7 +117,9 @@ const Practice = () => {
   const handleOnCanPlayThrough = () => {
     playerRef.current?.play()
     setState(State.GUESSING)
-    startTimer()
+    if (!timerTimeoutRef.current) {
+      startTimer()
+    }
   }
 
   const handleGuessChange = useCallback(
