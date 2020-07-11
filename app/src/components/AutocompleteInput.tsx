@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 import Autosuggest from 'react-autosuggest'
 
 import './AutocompleteInput.css'
-import { SERVER_URL } from '../../constants'
+import { SERVER_URL } from '../constants'
 
 interface AutocompleteInputProps {
   value: string

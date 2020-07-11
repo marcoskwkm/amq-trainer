@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios, { AxiosResponse } from 'axios'
 
-import { SERVER_URL } from '../../constants'
+import { SERVER_URL } from '../constants'
 
 interface DBStats {
   animeCount: number

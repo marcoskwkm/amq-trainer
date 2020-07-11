@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { Route } from '../../constants'
-import Login from '../Login'
+import { Route } from '../constants'
+import Login from './Login'
 
 interface NavbarProps {
   onRouteChange: (route: Route) => void

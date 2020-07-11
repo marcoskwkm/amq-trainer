@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { useUserContext } from '../../context/UserContext'
+import { useUserContext } from '../context/UserContext'
 
 enum State {
   INITIAL,

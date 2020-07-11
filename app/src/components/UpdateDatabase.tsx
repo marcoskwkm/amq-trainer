@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 
-import { SERVER_URL } from '../../constants'
+import { SERVER_URL } from '../constants'
 
 const UpdateDatabase = () => {
-  const [uploadedFile, setUploadedFile] = useState()
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [uploadResult, setUploadResult] = useState('')
 
   const handleFileChange = (file?: File) => {
