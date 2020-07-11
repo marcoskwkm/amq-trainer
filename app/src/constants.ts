@@ -4,4 +4,5 @@ export enum Route {
   HOME,
   PRACTICE,
   UPDATE_DATABASE,
+  LEARN_NEW_ANIME,
 }

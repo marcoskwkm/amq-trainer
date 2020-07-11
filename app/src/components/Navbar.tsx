@@ -19,6 +19,12 @@ const Navbar: React.FC<NavbarProps> = ({ onRouteChange }) => {
         </span>
         <span
           className="link dim dark-gray f6 f5-ns dib ml3 ml4-ns pointer"
+          onClick={() => onRouteChange(Route.LEARN_NEW_ANIME)}
+        >
+          Learn new anime
+        </span>
+        <span
+          className="link dim dark-gray f6 f5-ns dib ml3 ml4-ns pointer"
           onClick={() => onRouteChange(Route.PRACTICE)}
         >
           Practice

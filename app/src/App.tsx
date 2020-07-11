@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import Home from './components/Home'
+import LearnNewAnime from './components/LearnNewAnime'
 import Navbar from './components/Navbar'
 import Practice from './components/Practice'
 import UpdateDatabase from './components/UpdateDatabase'
@@ -22,6 +23,8 @@ const App = () => {
             <Practice />
           ) : route === Route.UPDATE_DATABASE ? (
             <UpdateDatabase />
+          ) : route === Route.LEARN_NEW_ANIME ? (
+            <LearnNewAnime />
           ) : null}
         </div>
       </UserContextProvider>
